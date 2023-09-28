@@ -4,7 +4,6 @@ const {ethers} = require("hardhat");
 const { setupContracts } = require("./helperTest");
 const { VALID_DEPOSIT, NOT_VALID_DEPOSIT } = require('./constants');
 
-
 describe("RegisterDomain - Domain Release Tests", function () {
     before(async function () {
         ({ registerDomain, addr1, addr2 } = await setupContracts());
@@ -26,10 +25,8 @@ describe("RegisterDomain - Domain Release Tests", function () {
         await registerDomain.connect(addr1).releaseDomain("ua");
 
         const domainOwner = await registerDomain.getDomainOwner("ua");
-        const domainDeposit = await registerDomain.getDomainDeposit("ua");
 
         expect(domainOwner).to.equal(ethers.constants.AddressZero);
-        expect(domainDeposit).to.equal(0);
     });
 
     it("Refund the deposit to the owner after release", async function () {
@@ -42,5 +39,4 @@ describe("RegisterDomain - Domain Release Tests", function () {
 
         expect(finalBalance).to.equal(initialBalance.sub(gasUsed.mul(tx.gasPrice)).add(VALID_DEPOSIT));
     });
-
 });

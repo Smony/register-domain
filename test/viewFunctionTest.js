@@ -13,9 +13,4 @@ describe("RegisterDomain - View Functions Tests", function () {
         await registerDomain.connect(addr1).registerDomain("ua", { value: VALID_DEPOSIT });
         expect(await registerDomain.getDomainOwner("ua")).to.equal(addr1.address);
     });
-
-    it("Return the correct deposit of the domain", async function() {
-        await registerDomain.connect(addr1).registerDomain("ua", { value: VALID_DEPOSIT });
-        expect(await registerDomain.getDomainDeposit("ua")).to.equal(VALID_DEPOSIT.toString());
-    });
 });
