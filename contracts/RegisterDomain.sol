@@ -11,9 +11,22 @@ contract RegisterDomain {
     mapping(string => Domain) public domains;
     uint256 public registrationDeposit = 1 ether;
 
-    function registerDomain(string memory _domain) public payable {
+    modifier isValidDomain(string memory _domain) {
         require(!containsDot(_domain), "Only top-level domains are allowed");
+        _;
+    }
+
+    modifier isAvailable(string memory _domain) {
         require(domains[_domain].owner == address(0), "Domain registered");
+        _;
+    }
+
+    modifier onlyOwner(string memory _domain) {
+        require(domains[_domain].owner == msg.sender, "Only domain owner can release the domain");
+        _;
+    }
+
+    function registerDomain(string memory _domain) public payable isValidDomain(_domain) isAvailable(_domain) {
         require(msg.value == registrationDeposit, "Deposit amount incorrect");
 
         domains[_domain] = Domain({
@@ -22,9 +35,7 @@ contract RegisterDomain {
         });
     }
 
-    function releaseDomain(string memory _domain) public {
-        require(domains[_domain].owner == msg.sender, "Only domain owner can release the domain");
-
+    function releaseDomain(string memory _domain) public onlyOwner(_domain) {
         uint256 refundAmount = domains[_domain].deposit;
         domains[_domain].owner = address(0);
         domains[_domain].deposit = 0;
