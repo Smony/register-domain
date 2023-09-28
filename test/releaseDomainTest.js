@@ -2,7 +2,7 @@ const {expect} = require("chai");
 const {ethers} = require("hardhat");
 
 const { setupContracts } = require("./helperTest");
-const { VALID_DEPOSIT, NOT_VALID_DEPOSIT } = require('./constants');
+const { VALID_DEPOSIT } = require('./constants');
 
 describe("RegisterDomain - Domain Release Tests", function () {
     before(async function () {
@@ -38,5 +38,13 @@ describe("RegisterDomain - Domain Release Tests", function () {
         const finalBalance = await addr1.getBalance();
 
         expect(finalBalance).to.equal(initialBalance.sub(gasUsed.mul(tx.gasPrice)).add(VALID_DEPOSIT));
+    });
+
+    it("Emit DomainReleased event when domain is released", async function () {
+        await registerDomain.connect(addr2).registerDomain("com", { value: VALID_DEPOSIT });
+
+        await expect(registerDomain.connect(addr2).releaseDomain("com"))
+            .to.emit(registerDomain, "DomainReleased")
+            .withArgs("com", addr2.address, VALID_DEPOSIT);
     });
 });

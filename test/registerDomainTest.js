@@ -30,4 +30,9 @@ describe("RegisterDomain - Domain Registration Tests", function () {
             .to.be.revertedWith("Only top-level domains are allowed");
     });
 
+    it("Emit DomainRegistered event when domain is registered", async function () {
+        await expect(registerDomain.connect(addr1).registerDomain("biz", { value: VALID_DEPOSIT }))
+            .to.emit(registerDomain, "DomainRegistered")
+            .withArgs("biz", addr1.address, VALID_DEPOSIT);
+    });
 });
