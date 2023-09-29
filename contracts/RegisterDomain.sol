@@ -15,6 +15,7 @@ contract RegisterDomain {
     event DomainRegistered(string domain, address owner, uint256 amount);
     event DomainReleased(string domain, address owner, uint256 amount);
     event OwnerChanged(address newOwner);
+    event RegistrationDepositChanged(uint256 newDepositAmount);
 
     constructor() {
         contractOwner = msg.sender;
@@ -61,6 +62,7 @@ contract RegisterDomain {
 
     function setRegistrationDeposit(uint256 _amount) public onlyOwner {
         registrationDeposit = _amount;
+        emit RegistrationDepositChanged(_amount);
     }
 
     function getDomainOwner(string memory _domain) public view returns (address) {

@@ -26,4 +26,10 @@ describe("RegisterDomain - Contract Owner Tests", function () {
     it("Not allow non-owners to change the owner", async function () {
         await expect(registerDomain.connect(addr1).changeOwner(addr2.address)).to.be.revertedWith("Is not the contract owner");
     });
+
+    it("Emit RegistrationDepositChanged event when deposit amount is changed", async function () {
+        await expect(registerDomain.connect(addr2).setRegistrationDeposit(NEW_VALID_DEPOSIT))
+            .to.emit(registerDomain, 'RegistrationDepositChanged')
+            .withArgs(NEW_VALID_DEPOSIT);
+    });
 });
