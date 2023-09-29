@@ -11,6 +11,8 @@ contract RegisterDomain {
 
     mapping(string => Domain) public domains;
     uint256 public registrationDeposit;
+    uint256 public totalDomainsRegistered = 0;
+    string[] public registeredDomains;
 
     event DomainRegistered(string domain, address owner, uint256 amount);
     event DomainReleased(string domain, address owner, uint256 amount);
@@ -28,7 +30,7 @@ contract RegisterDomain {
     }
 
     modifier isAvailable(string memory _domain) {
-        require(domains[_domain].owner == address(0), "Domain registered");
+        require(domains[_domain].owner == address(0), "Domain already exists");
         _;
     }
 
@@ -45,6 +47,10 @@ contract RegisterDomain {
     function registerDomain(string memory _domain) public payable isValidDomain(_domain) isAvailable(_domain) {
         require(msg.value == registrationDeposit, "Deposit amount incorrect");
         domains[_domain].owner = msg.sender;
+
+        totalDomainsRegistered += 1;
+        registeredDomains.push(_domain);
+
         emit DomainRegistered(_domain, msg.sender, msg.value);
     }
 
@@ -71,6 +77,14 @@ contract RegisterDomain {
 
     function owner() public view returns (address) {
         return contractOwner;
+    }
+
+    function getContractBalance() public view returns (uint256) {
+        return address(this).balance;
+    }
+
+    function getRegisteredDomains() public view returns (string[] memory) {
+        return registeredDomains;
     }
 
     function containsDot(string memory _domain) internal pure returns (bool) {

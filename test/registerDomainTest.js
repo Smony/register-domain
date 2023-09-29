@@ -5,7 +5,7 @@ const { setupContracts } = require("./helperTest");
 const { VALID_DEPOSIT, NOT_VALID_DEPOSIT } = require('./constants');
 
 describe("RegisterDomain - Domain Registration Tests", function () {
-    before(async function () {
+    beforeEach(async function () {
         ({ registerDomain, addr1 } = await setupContracts());
     });
 
@@ -22,7 +22,7 @@ describe("RegisterDomain - Domain Registration Tests", function () {
     it("Register a domain that is already registered", async function () {
         await registerDomain.connect(addr1).registerDomain("org", {value: VALID_DEPOSIT});
         await expect(registerDomain.connect(addr1).registerDomain("org", {value: VALID_DEPOSIT}))
-            .to.be.revertedWith("Domain registered");
+            .to.be.revertedWith("Domain already exists");
     });
 
     it("Not allow registration of subdomains", async function () {
@@ -34,5 +34,10 @@ describe("RegisterDomain - Domain Registration Tests", function () {
         await expect(registerDomain.connect(addr1).registerDomain("biz", { value: VALID_DEPOSIT }))
             .to.emit(registerDomain, "DomainRegistered")
             .withArgs("biz", addr1.address, VALID_DEPOSIT);
+    });
+
+    it("Increase totalDomainsRegistered on new domain registration", async function () {
+        await registerDomain.connect(addr1).registerDomain("com", { value: VALID_DEPOSIT });
+        expect(await registerDomain.totalDomainsRegistered()).to.equal(1);
     });
 });

@@ -35,9 +35,11 @@ describe("RegisterDomain - Domain Release Tests", function () {
         const initialBalance = await addr1.getBalance();
         const tx = await registerDomain.connect(addr1).releaseDomain("biz");
         const gasUsed = (await tx.wait()).gasUsed;
-        const finalBalance = await addr1.getBalance();
+        const gasCost = gasUsed.mul(tx.gasPrice);
 
-        expect(finalBalance).to.equal(initialBalance.sub(gasUsed.mul(tx.gasPrice)).add(VALID_DEPOSIT));
+        const expectedFinalBalance = initialBalance.sub(gasCost).add(VALID_DEPOSIT);
+
+        expect(await addr1.getBalance()).to.equal(expectedFinalBalance);
     });
 
     it("Emit DomainReleased event when domain is released", async function () {
